@@ -271,6 +271,119 @@
         grid-template-columns: 1fr;
       }
     }
+    .download-card {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 6px 0 2px;
+    }
+    .download-card-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .download-card-head .card-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 11px;
+      background: var(--accent-soft);
+      color: var(--accent-text);
+      flex: none;
+    }
+    .download-card-head .card-icon svg {
+      width: 22px;
+      height: 22px;
+    }
+    .download-card-head h3 {
+      margin: 0;
+      font-size: 17px;
+    }
+    .download-card-head p {
+      margin: 3px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .pan-field {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface-2);
+    }
+    .pan-field .field-label {
+      flex: none;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .pan-field .field-value {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .pan-field .code-value {
+      flex: 1;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.35em;
+      color: var(--accent-text);
+      font-variant-numeric: tabular-nums;
+    }
+    .pan-copy-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 34px;
+      padding: 0 14px;
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+    }
+    .pan-copy-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent-text);
+      background: var(--accent-soft);
+    }
+    .pan-copy-btn svg {
+      width: 15px;
+      height: 15px;
+    }
+    .pan-copy-btn.copied {
+      border-color: var(--success);
+      color: var(--success);
+      background: var(--tag-free-bg);
+    }
+    .download-card-tip {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .download-card-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .download-card-actions .primary-btn {
+      flex: 1;
+    }
+    .modal .modal-close {
+      top: 14px;
+      right: 14px;
+    }
   </style>
 </head>
 <body>
@@ -342,10 +455,10 @@
             <span>安装包 <b>1.57 GB</b></span>
           </div>
           <div class="plugin-actions">
-            <a class="download-btn" href="downloads/黑叶插件一键安装.exe" download>
+            <button class="download-btn" id="downloadBtn" type="button">
               <i data-lucide="download"></i>下载安装包
-            </a>
-            <span class="download-note">下载后双击运行，按提示一键安装</span>
+            </button>
+            <span class="download-note">安装包存放于百度网盘，点击按钮获取链接</span>
           </div>
         </article>
 
@@ -363,6 +476,43 @@
     <span>黑叶插件 · 让 CorelDRAW 更好用</span>
     <span class="footer-note">全部插件免费 · 持续更新</span>
   </footer>
+
+  <div class="modal-backdrop" id="downloadModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="downloadModalTitle">
+      <button class="modal-close icon-btn" id="downloadModalClose" type="button" aria-label="关闭下载" title="关闭">
+        <i data-lucide="x"></i>
+      </button>
+      <div class="download-card">
+        <div class="download-card-head">
+          <div class="card-icon"><i data-lucide="cloud-download"></i></div>
+          <div>
+            <h3 id="downloadModalTitle">下载黑叶CDR工具箱</h3>
+            <p>安装包已存放至百度网盘</p>
+          </div>
+        </div>
+        <div class="pan-field">
+          <span class="field-label">网盘链接</span>
+          <span class="field-value" id="panLinkText">https://pan.baidu.com/s/1FD-MeUVDxMDrAuPevevMOQ</span>
+          <a class="pan-copy-btn" id="panOpenBtn" href="https://pan.baidu.com/s/1FD-MeUVDxMDrAuPevevMOQ?pwd=mes4" target="_blank" rel="noopener noreferrer">
+            <i data-lucide="external-link"></i>打开
+          </a>
+        </div>
+        <div class="pan-field">
+          <span class="field-label">提取码</span>
+          <span class="field-value code-value" id="panCodeText">mes4</span>
+          <button class="pan-copy-btn" id="panCopyBtn" type="button">
+            <i data-lucide="copy"></i>复制提取码
+          </button>
+        </div>
+        <p class="download-card-tip">打开网盘链接后输入提取码 <b>mes4</b>，即可下载「黑叶插件一键安装.exe」。下载后双击运行，按提示一键安装。</p>
+        <div class="download-card-actions">
+          <a class="primary-btn" id="panGoBtn" href="https://pan.baidu.com/s/1FD-MeUVDxMDrAuPevevMOQ?pwd=mes4" target="_blank" rel="noopener noreferrer">
+            <i data-lucide="external-link"></i>打开百度网盘
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="lucide.min.js"></script>
   <script>
@@ -397,6 +547,68 @@
 
       applyTheme();
       if (window.lucide) { window.lucide.createIcons(); }
+
+      var downloadBtn = document.getElementById('downloadBtn');
+      var downloadModal = document.getElementById('downloadModal');
+      var downloadModalClose = document.getElementById('downloadModalClose');
+      var panCopyBtn = document.getElementById('panCopyBtn');
+      var panCodeText = document.getElementById('panCodeText');
+
+      function openDownloadModal() {
+        downloadModal.hidden = false;
+        document.body.style.overflow = 'hidden';
+        if (window.lucide) { window.lucide.createIcons(); }
+      }
+
+      function closeDownloadModal() {
+        downloadModal.hidden = true;
+        document.body.style.overflow = '';
+        panCopyBtn.innerHTML = '<i data-lucide="copy"></i>复制提取码';
+        panCopyBtn.classList.remove('copied');
+        if (window.lucide) { window.lucide.createIcons(); }
+      }
+
+      function copyText(text) {
+        function legacyCopy() {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          var ok = false;
+          try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+          document.body.removeChild(ta);
+          return ok;
+        }
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text).then(function () { return true; }, function () { return legacyCopy(); });
+        }
+        return Promise.resolve(legacyCopy());
+      }
+
+      downloadBtn.addEventListener('click', openDownloadModal);
+      downloadModalClose.addEventListener('click', closeDownloadModal);
+      downloadModal.addEventListener('click', function (event) {
+        if (event.target === downloadModal) {
+          closeDownloadModal();
+        }
+      });
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && !downloadModal.hidden) {
+          closeDownloadModal();
+        }
+      });
+
+      panCopyBtn.addEventListener('click', function () {
+        copyText('mes4').then(function (ok) {
+          panCopyBtn.innerHTML = ok
+            ? '<i data-lucide="check"></i>已复制'
+            : '<i data-lucide="copy"></i>复制失败，请手动复制';
+          panCopyBtn.classList.add('copied');
+          if (window.lucide) { window.lucide.createIcons(); }
+        });
+      });
     })();
   </script>
 </body>
